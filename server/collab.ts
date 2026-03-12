@@ -992,7 +992,7 @@ function resolveEmbeddedWsUrlBase(mainHttpPort: number): string {
     try {
       const url = new URL(publicBase);
       url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-      url.pathname = '/ws';
+      url.pathname = url.pathname.replace(/\/+$/, '') + '/ws';
       url.search = '';
       url.hash = '';
       return url.toString().replace(/\/+$/, '');
