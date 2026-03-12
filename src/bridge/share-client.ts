@@ -207,8 +207,9 @@ export class ShareClient {
   }
 
   private getApiBase(): string {
+    const basePath = ((window as any).__PROOF_CONFIG__?.basePath || '').replace(/\/+$/, '');
     const origin = this.apiOriginOverride || window.location.origin;
-    return `${origin}/api`;
+    return `${origin}${basePath}/api`;
   }
 
   getShareAuthHeaders(explicitToken?: string): Record<string, string> {

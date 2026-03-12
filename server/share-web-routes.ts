@@ -167,7 +167,9 @@ function buildLiveViewerLeaseConnectionId(
 
 function buildShareRuntimeConfigScript(slug: string, shareToken?: string | null): string {
   const commentUiDefaultMode = normalizeCommentUiMode(process.env.PROOF_COMMENT_UI_DEFAULT_MODE);
+  const basePath = (process.env.PROOF_BASE_PATH || '').replace(/\/+$/, '');
   const configLines = [
+    basePath ? `window.__PROOF_CONFIG__.basePath = ${JSON.stringify(basePath)};` : '',
     shareToken ? `window.__PROOF_CONFIG__.shareSlug = ${JSON.stringify(slug)};` : '',
     shareToken ? `window.__PROOF_CONFIG__.shareToken = ${JSON.stringify(shareToken)};` : '',
     commentUiDefaultMode ? `window.__PROOF_CONFIG__.commentUiDefaultMode = ${JSON.stringify(commentUiDefaultMode)};` : '',
