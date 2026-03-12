@@ -1,5 +1,5 @@
 import { createHash, randomUUID, timingSafeEqual } from 'crypto';
-import Database from 'better-sqlite3';
+import Database, { type Database as DatabaseType } from './compat-sqlite.js';
 import path from 'path';
 import type { ShareRole, ShareState } from './share-types.js';
 import { fileURLToPath } from 'url';
@@ -14,7 +14,7 @@ import { recordMutationBackfill, recordMutationIdempotencyDualRead } from './met
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let db: Database.Database;
+let db: DatabaseType;
 
 const DEFAULT_EVENT_PAGE_SIZE = 100;
 const DB_METADATA_TABLE = 'system_metadata';
@@ -62,7 +62,7 @@ function isCrossEnvironmentWriteOverrideEnabled(): boolean {
   return isTruthyFlag(process.env.ALLOW_CROSS_ENV_WRITES);
 }
 
-function createMetadataTableIfNeeded(d: Database.Database): void {
+function createMetadataTableIfNeeded(d: DatabaseType): void {
   if (metadataTableInitialized) return;
   d.exec(`
     CREATE TABLE IF NOT EXISTS ${DB_METADATA_TABLE} (
@@ -74,7 +74,7 @@ function createMetadataTableIfNeeded(d: Database.Database): void {
   metadataTableInitialized = true;
 }
 
-function readMetadataValue(d: Database.Database, key: string): string | null {
+function readMetadataValue(d: DatabaseType, key: string): string | null {
   const row = d.prepare(`
     SELECT value
     FROM ${DB_METADATA_TABLE}
@@ -86,7 +86,7 @@ function readMetadataValue(d: Database.Database, key: string): string | null {
     : null;
 }
 
-function writeMetadataValue(d: Database.Database, key: string, value: string): void {
+function writeMetadataValue(d: DatabaseType, key: string, value: string): void {
   const now = new Date().toISOString();
   d.prepare(`
     INSERT OR REPLACE INTO ${DB_METADATA_TABLE} (key, value, updated_at)
@@ -94,19 +94,19 @@ function writeMetadataValue(d: Database.Database, key: string, value: string): v
   `).run(key, value, now);
 }
 
-function readMetadataNumber(d: Database.Database, key: string, fallback: number = 0): number {
+function readMetadataNumber(d: DatabaseType, key: string, fallback: number = 0): number {
   const raw = readMetadataValue(d, key);
   if (!raw) return fallback;
   const parsed = Number.parseInt(raw, 10);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
-function writeMetadataNumber(d: Database.Database, key: string, value: number): void {
+function writeMetadataNumber(d: DatabaseType, key: string, value: number): void {
   const normalized = Number.isFinite(value) && value >= 0 ? Math.trunc(value) : 0;
   writeMetadataValue(d, key, String(normalized));
 }
 
-function hasAnyDocuments(d: Database.Database): boolean {
+function hasAnyDocuments(d: DatabaseType): boolean {
   const row = d.prepare(`
     SELECT 1 AS present
     FROM documents
@@ -115,7 +115,7 @@ function hasAnyDocuments(d: Database.Database): boolean {
   return row?.present === 1;
 }
 
-function readOrInitializeDatabaseEnvironment(d: Database.Database): string {
+function readOrInitializeDatabaseEnvironment(d: DatabaseType): string {
   createMetadataTableIfNeeded(d);
 
   const existing = readMetadataValue(d, DB_ENV_METADATA_KEY);
@@ -347,7 +347,7 @@ export interface ActiveCollabConnectionInput {
   observedAt?: string;
 }
 
-export function getDb(): Database.Database {
+export function getDb(): DatabaseType {
   if (!db) {
     const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '..', 'proof-share.db');
     db = new Database(dbPath);
@@ -470,7 +470,7 @@ function backfillDocumentProjections(): void {
   tx();
 }
 
-function getDocumentRevisionForSlug(d: Database.Database, slug: string): number | null {
+function getDocumentRevisionForSlug(d: DatabaseType, slug: string): number | null {
   const row = d.prepare(`
     SELECT revision
     FROM documents

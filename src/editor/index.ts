@@ -3338,17 +3338,6 @@ class ProofEditorImpl implements ProofEditor {
     this.closePresenceMenu();
     this.closeAgentMenu();
 
-    const wordmark = document.createElement('a');
-    wordmark.textContent = 'Proof';
-    wordmark.href = 'https://proof.com';
-    wordmark.target = '_blank';
-    wordmark.rel = 'noopener';
-    wordmark.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 8px;border-radius:10px;font-weight:600;color:#333;font-size:13px;letter-spacing:-0.2px;flex-shrink:0;text-decoration:none;';
-
-    const separator = document.createElement('span');
-    separator.className = 'share-pill-sep';
-    separator.style.cssText = 'width:1px;height:16px;background:rgba(0,0,0,0.1);flex-shrink:0';
-
     const title = document.createElement('span');
     title.className = 'share-pill-title';
     title.style.cssText = 'font-weight:500;color:#374151;font-size:13px;flex:1 1 auto;min-width:0;';
@@ -3381,7 +3370,7 @@ class ProofEditorImpl implements ProofEditor {
 
     const shareBtn = this.createShareMenuButton();
 
-    banner.replaceChildren(wordmark, separator, title, syncStatusSep, syncStatusInline, avatars, agentSlot, shareBtn);
+    banner.replaceChildren(title, syncStatusSep, syncStatusInline, avatars, agentSlot, shareBtn);
     this.scheduleBannerLayoutUpdate();
   }
 
@@ -4542,27 +4531,27 @@ class ProofEditorImpl implements ProofEditor {
     banner.id = 'share-banner';
     banner.style.cssText = `
       position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 8px;
+      right: 12px;
       background: rgba(255,255,255,0.94);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       color: #374151;
       border: 1px solid rgba(0,0,0,0.06);
       border-radius: 28px;
-      padding: 10px 12px 10px 22px;
-      font-size: 13px;
+      padding: 6px 10px 6px 14px;
+      font-size: 12px;
       font-weight: 400;
       z-index: 1000;
       display: flex;
       align-items: center;
-      gap: 12px;
-      max-width: calc(100vw - 24px);
+      gap: 8px;
       box-sizing: border-box;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05), 0 0 0 0.5px rgba(0,0,0,0.03);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      min-width: min(480px, calc(100vw - 24px));
+      transform: scale(0.85);
+      transform-origin: top right;
+      opacity: 0.7;
     `;
     this.shareOtherViewerCount = Math.max(0, viewers);
     this.renderShareBannerContent(banner, this.shareOtherViewerCount);

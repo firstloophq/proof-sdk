@@ -1,0 +1,28 @@
+services:
+  proof:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - PROOF_SHARE_MARKDOWN_AUTH_MODE=none
+      - PROOF_CORS_ALLOW_ORIGINS=http://localhost:4000,http://127.0.0.1:4000
+      - DATABASE_PATH=/app/data/proof-share.db
+      - COLLAB_EMBEDDED_WS=true
+    volumes:
+      - proof-data:/app/data
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: ./server
+        - action: rebuild
+          path: ./src
+        - action: rebuild
+          path: ./packages
+        - action: rebuild
+          path: ./package.json
+
+volumes:
+  proof-data:

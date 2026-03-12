@@ -2,7 +2,7 @@
 
 Proof SDK is the open-source editor, collaboration server, provenance model, and agent HTTP bridge that power collaborative documents in Proof.
 
-If you want the hosted product, use [Proof](https://proofeditor.ai).
+If you want the hosted product, use [Proof](https://proof.com).
 
 ## What Is Included
 
