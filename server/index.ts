@@ -202,8 +202,9 @@ async function main(): Promise<void> {
   setupWebSocket(wss);
   await startCollabRuntimeEmbedded(PORT);
 
-  server.listen(PORT, () => {
-    console.log(`[proof-sdk] listening on http://127.0.0.1:${PORT}`);
+  const HOST = process.env.HOST || '0.0.0.0';
+  server.listen(PORT, HOST, () => {
+    console.log(`[proof-sdk] listening on http://${HOST}:${PORT}`);
   });
 }
 
