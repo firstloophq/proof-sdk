@@ -746,7 +746,8 @@ export class ShareClient {
     }
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws?slug=${encodeURIComponent(this.slug)}&token=${encodeURIComponent(wsToken)}`;
+    const basePath = ((window as any).__PROOF_CONFIG__?.basePath || '').replace(/\/+$/, '');
+    const wsUrl = `${protocol}//${window.location.host}${basePath}/ws?slug=${encodeURIComponent(this.slug)}&token=${encodeURIComponent(wsToken)}`;
 
     this.ws = new WebSocket(wsUrl);
 
