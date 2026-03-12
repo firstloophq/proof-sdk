@@ -597,8 +597,9 @@ shareWebRoutes.get('/d/:slug', (req: Request, res: Response) => {
   const shouldReloadShareHtml = process.env.NODE_ENV !== 'production' || !shareHtml;
   if (shouldReloadShareHtml) {
     try {
+      const basePath = (process.env.PROOF_BASE_PATH || '').replace(/\/+$/, '');
       shareHtml = readFileSync(path.join(distPath, 'index.html'), 'utf-8')
-        .replace(/"\.\//g, '"/'); // "./assets/..." -> "/assets/..."
+        .replace(/"\.\//g, `"${basePath}/`); // "./assets/..." -> "/proof/assets/..." (or "/assets/..." if no base path)
     } catch {
       recordShareLinkOpen('failure', 'SERVER_ERROR');
       res.status(500).send('Editor not built. Run: npm run build');
